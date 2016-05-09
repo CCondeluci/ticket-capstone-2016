@@ -1,0 +1,32 @@
+Quick and dirty write up for whoever is reading this, either Adam or the next group taking over this project. It's just so you don't fall into some of the same pitfalls as we did. I assume the next step in this project is obtaining updates from the RT server with authorization. Some of the updates has already been done or at least a base for it. Authorization is nonexistent in the current code. I am going to assume at some point you going to trash a lot of the code we worked on for cakephp and json and instead rework it to use your own code. 
+
+If you are working on the Android section of the project I would look into activities, intents, context, and OnActivityResult. All four of these are essential to understand. Keep in mind that Android permissions are rather strict especially with writing and reading files. Changes to how this works changes every so often when new devices are released. Make sure you test these aspects on both an emulator and real hardware as certain read and write aspects may act differently between the two. 
+
+For the JSON and cakephp section the files are a bare bones for getting data from the our sample RT server and displaying the information on screen. These files may require some changes. 
+
+For JSON we used the gson library from google. https://github.com/google/gson
+This library has the ability to automatically take a json string and transform it into a java object. We did not use this and it may be worth looking into if you do not wish to use the current code. Otherwise all data is in string format using the functions I included. I would read the documentation regardless of if you go with the object solution or not. 
+
+If you have never used json before it would be good to take a look at the following page. http://www.w3schools.com/json/json_syntax.asp
+This will explain the difference between json objects and json arrays. This is why the line json.SeperateJSONvalues("Tickets", "Ticket"); exists. If cakephp returns a json object the header to it will be "Ticket", if its an array it will be "Tickets". This can effect how you parse the data. 
+
+For cakephp we used version 2.x but use whatever version whoever is the running the project advises you to use. I would suggest going through the cakephp tutorial on its website. Make sure you have time to go over it all carefully as there is a lot to take in at once. http://book.cakephp.org/2.0/en/tutorials-and-examples/blog/blog.html
+The find function is your best friend. Learn how to use it. If you know a bit of simple SQL then this should come quickly to you. This link has a lot of strong of examples to make your job easier. http://alvinalexander.com/php/cakephp-find-conditions-cakephp-find-all-list-count
+
+For working with the database I want to note that we did not have access to the active production RT server. As such our data set was limited when dealing with the database schema. You can find the schema here. http://requesttracker.wikia.com/wiki/Schema
+A lot of graphs that may not be easy to understand at first. When looking at the database there are three tables that will matter to you, Tickets, Transactions, and Attachments.
+
+Tickets - stores the subject of the ticket, status (open/closed), what date it was started, what date its due, when it was last updated, and who created it.
+Transactions - (There are a million of these). These contain metadata about various attachments such as the type. Each ticket has multiple transactions. 
+Attachments - stores the subject, message id, content type (text/plain), headers, date created, and actual content. However content is stored in a binary file. This content was only readable once we read it from json. Each ticket has multiple attachments. 
+
+To obtain the proper attachment we used the following method. Our sample set was small but it worked 100% of the time. Make sure this is tested. 
+
+Obtain the ID of the ticket you want. Use Ticket.ID to search for Transaction.ObjectId. There will be multiple results, get the newest one either by Transaction.Id or Transaction.Created. Using Transaction.Id search for Attachments.TransactionId and you should find the data you are looking for. 
+
+Make sure you don't send back an attached image if possible. That's a good way to kill someones internet and battery life. We don't know what the database will look like to an authorized user. In that case you can use probably use the Users table. The following solution is 100% theory and untested but will probably work. 
+
+Compare an email address between Users.email and use that information to get Users.id. Compare Users.id against Tickets.Creator. 
+
+
+That's all I really have to say. I hope someone finds this useful. 

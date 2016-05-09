@@ -1,0 +1,38 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "com.capstone.ticket_capstone"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    packagingOptions { //Added at last minute, take note
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: '../libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    //May have to uncomment these?
+  //  compile files('mail.jar')
+  //  compile files('additionnal.jar')
+  //  compile files('activation.jar')
+//    compile files('C:/ticket-capstone-repo/ticket-capstone/TicketAndroid/libs/activation.jar')
+//    compile files('C:/ticket-capstone-repo/ticket-capstone/TicketAndroid/libs/additionnal.jar')
+//    compile files('C:/ticket-capstone-repo/ticket-capstone/TicketAndroid/libs/mail.jar')
+}
